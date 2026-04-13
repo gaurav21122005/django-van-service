@@ -1,6 +1,5 @@
 import os
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'van_service_project.settings')
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vanservice.settings')
 application = get_wsgi_application()

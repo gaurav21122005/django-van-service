@@ -1,0 +1,39 @@
+{% extends "tracking/base.html" %}
+{% block title %}Vans — VanService{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Vans</h1>
+  <a href="{% url 'van_create' %}" class="btn btn-primary">+ Add van</a>
+</div>
+
+<div class="card">
+  {% if vans %}
+  <table>
+    <thead>
+      <tr><th>Registration</th><th>Model</th><th>Capacity</th><th>Status</th><th>Driver</th><th>Mileage</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for van in vans %}
+      <tr>
+        <td><a href="{% url 'van_detail' van.pk %}"><strong>{{ van.registration }}</strong></a></td>
+        <td>{{ van.model }}</td>
+        <td>{{ van.capacity_kg }} kg</td>
+        <td><span class="badge badge-{{ van.status }}">{{ van.get_status_display }}</span></td>
+        <td>{{ van.driver.name|default:"—" }}</td>
+        <td>{{ van.mileage_km|default:"0" }} km</td>
+        <td>
+          <div class="actions">
+            <a href="{% url 'van_edit' van.pk %}" class="btn btn-sm">Edit</a>
+            <a href="{% url 'van_delete' van.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">No vans registered yet. <a href="{% url 'van_create' %}">Add the first one.</a></p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends "tracking/base.html" %}
+
+{% block title %}
+{{ van.registration }} — VanService
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>{{ van.registration }} — {{ van.model }}</h1>
+
+  <div class="actions">
+    <a href="{% url 'van_edit' van.pk %}" class="btn">Edit</a>
+    <a href="{% url 'van_delete' van.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'van_list' %}" class="btn">← Back</a>
+  </div>
+</div>
+
+<!-- ================= VAN DETAILS ================= -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
+
+  <div class="card">
+    <h2>Van details</h2>
+
+    <table>
+      <tr>
+        <td style="color:#666;width:140px">Status</td>
+        <td>
+          <span class="badge badge-{{ van.status }}">
+            {{ van.get_status_display|default:"Unknown" }}
+          </span>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="color:#666">Capacity</td>
+        <td>{{ van.capacity_kg|default:"0" }} kg</td>
+      </tr>
+
+      <tr>
+        <td style="color:#666">Mileage</td>
+        <td>{{ van.mileage_km|default:"0" }} km</td>
+      </tr>
+
+      <tr>
+        <td style="color:#666">Last service</td>
+        <td>{{ van.last_service_date|default:"—" }}</td>
+      </tr>
+
+      <tr>
+        <td style="color:#666">Driver</td>
+        <td>
+          {% if van.driver %}
+            <a href="{% url 'driver_detail' van.driver.pk %}">
+              {{ van.driver.name|default:van.driver }}
+            </a>
+          {% else %}
+            <span style="color:#999">Unassigned</span>
+          {% endif %}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="color:#666">Added</td>
+        <td>{{ van.created_at|date:"d M Y" }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ================= RECENT LOCATIONS ================= -->
+  <div class="card">
+    <h2>Recent locations</h2>
+
+    {% if locations %}
+      <table>
+        <thead>
+          <tr>
+            <th>Address</th>
+            <th>Speed</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for loc in locations %}
+          <tr>
+            <td style="font-size:13px">
+              {{ loc.address|default:"" }}
+              {% if not loc.address %}
+                {{ loc.latitude }}, {{ loc.longitude }}
+              {% endif %}
+            </td>
+
+            <td>{{ loc.speed_kmh|default:"0" }} km/h</td>
+
+            <td style="color:#888;font-size:12px">
+              {{ loc.timestamp|date:"d M H:i" }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    {% else %}
+      <p class="empty">No location pings yet.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ================= TRIPS ================= -->
+<div class="card">
+  <h2>Trips</h2>
+
+  {% if trips %}
+  <table>
+    <thead>
+      <tr>
+        <th>Origin</th>
+        <th>Destination</th>
+        <th>Driver</th>
+        <th>Status</th>
+        <th>Departure</th>
+        <th>Distance</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for trip in trips %}
+      <tr>
+        <td>{{ trip.origin|default:"—" }}</td>
+        <td>{{ trip.destination|default:"—" }}</td>
+
+        <td>
+          {% if trip.driver %}
+            {{ trip.driver.name|default:trip.driver }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+
+        <td>
+          <span class="badge badge-{{ trip.status }}">
+            {{ trip.get_status_display|default:"Unknown" }}
+          </span>
+        </td>
+
+        <td style="font-size:13px;color:#555">
+          {{ trip.scheduled_departure|date:"d M Y H:i"|default:"—" }}
+        </td>
+
+        <td>
+          {% if trip.distance_km %}
+            {{ trip.distance_km }} km
+          {% else %}
+            —
+          {% endif %}
+        </td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% else %}
+    <p class="empty">No trips for this van.</p>
+  {% endif %}
+</div>
+
+<!-- ================= API SECTION ================= -->
+<div class="card" style="background:#f9f9f7">
+  <h2>API — update location</h2>
+
+  <p style="font-size:13px;color:#555;margin-bottom:8px">
+    POST to <code>/api/vans/{{ van.pk }}/location/</code> with JSON body:
+  </p>
+
+  <pre style="font-size:12px;background:#1a1a1a;color:#9fe1cb;padding:1rem;border-radius:7px;overflow:auto">
+{
+  "latitude": 12.9716,
+  "longitude": 77.5946,
+  "address": "Bengaluru",
+  "speed_kmh": 45.5
+}
+  </pre>
+</div>
+
+{% endblock %}

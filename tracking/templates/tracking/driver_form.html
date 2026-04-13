@@ -1,0 +1,46 @@
+{% extends "tracking/base.html" %}
+{% block title %}{{ title }} — VanService{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ title }}</h1>
+  <a href="{% url 'driver_list' %}" class="btn">← Back</a>
+</div>
+
+<div class="card" style="max-width:640px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div>
+        <label>Full name</label>
+        {{ form.name }}
+        {% if form.name.errors %}<p style="color:#a32d2d;font-size:12px">{{ form.name.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label>License number</label>
+        {{ form.license_number }}
+        {% if form.license_number.errors %}<p style="color:#a32d2d;font-size:12px">{{ form.license_number.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Phone</label>
+        {{ form.phone }}
+      </div>
+      <div>
+        <label>Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<p style="color:#a32d2d;font-size:12px">{{ form.email.errors.0 }}</p>{% endif %}
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      {{ form.is_active }}
+      <label style="margin:0;font-weight:400">Active driver</label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{% url 'driver_list' %}" class="btn">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

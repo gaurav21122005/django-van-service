@@ -1,0 +1,67 @@
+{% extends "tracking/base.html" %}
+{% block title %}{{ driver.name }} — VanService{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ driver.name }}</h1>
+  <div class="actions">
+    <a href="{% url 'driver_edit' driver.pk %}" class="btn">Edit</a>
+    <a href="{% url 'driver_delete' driver.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'driver_list' %}" class="btn">← Back</a>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem">
+  <div class="card">
+    <h2>Driver details</h2>
+    <table>
+      <tr><td style="color:#666;width:140px">License</td><td>{{ driver.license_number }}</td></tr>
+      <tr><td style="color:#666">Phone</td><td>{{ driver.phone }}</td></tr>
+      <tr><td style="color:#666">Email</td><td>{{ driver.email }}</td></tr>
+      <tr><td style="color:#666">Status</td><td><span class="badge {% if driver.is_active %}badge-available{% else %}badge-inactive{% endif %}">{% if driver.is_active %}Active{% else %}Inactive{% endif %}</span></td></tr>
+      <tr><td style="color:#666">Joined</td><td>{{ driver.created_at|date:"d M Y" }}</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Assigned vans</h2>
+    {% with vans=driver.vans.all %}
+    {% if vans %}
+    <table>
+      <thead><tr><th>Registration</th><th>Model</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for van in vans %}
+        <tr>
+          <td><a href="{% url 'van_detail' van.pk %}">{{ van.registration }}</a></td>
+          <td style="color:#555">{{ van.model }}</td>
+          <td><span class="badge badge-{{ van.status }}">{{ van.get_status_display }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty">No vans assigned.</p>{% endif %}
+    {% endwith %}
+  </div>
+</div>
+
+<div class="card">
+  <h2>Trip history</h2>
+  {% if trips %}
+  <table>
+    <thead><tr><th>Van</th><th>Origin</th><th>Destination</th><th>Status</th><th>Departure</th><th>Distance</th></tr></thead>
+    <tbody>
+      {% for trip in trips %}
+      <tr>
+        <td><a href="{% url 'van_detail' trip.van.pk %}">{{ trip.van.registration }}</a></td>
+        <td>{{ trip.origin }}</td>
+        <td>{{ trip.destination }}</td>
+        <td><span class="badge badge-{{ trip.status }}">{{ trip.get_status_display }}</span></td>
+        <td style="font-size:13px;color:#555">{{ trip.scheduled_departure|date:"d M Y H:i" }}</td>
+        <td>{{ trip.distance_km|default:"—" }}{% if trip.distance_km %} km{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty">No trips recorded for this driver.</p>{% endif %}
+</div>
+{% endblock %}

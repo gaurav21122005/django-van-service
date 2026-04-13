@@ -1,0 +1,75 @@
+{% extends "tracking/base.html" %}
+{% block title %}Dashboard — VanService{% endblock %}
+
+{% block content %}
+<h1>Fleet Dashboard</h1>
+
+<div class="stats-row">
+  <div class="stat"><div class="stat-val">{{ total_vans }}</div><div class="stat-lbl">Total vans</div></div>
+  <div class="stat"><div class="stat-val" style="color:#185fa5">{{ on_route }}</div><div class="stat-lbl">On route</div></div>
+  <div class="stat"><div class="stat-val" style="color:#3b6d11">{{ available }}</div><div class="stat-lbl">Available</div></div>
+  <div class="stat"><div class="stat-val" style="color:#854f0b">{{ maintenance }}</div><div class="stat-lbl">Maintenance</div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+
+  <div class="card">
+    <h2>Fleet status</h2>
+    {% if vans %}
+    <table>
+      <thead><tr><th>Registration</th><th>Model</th><th>Status</th><th>Driver</th></tr></thead>
+      <tbody>
+        {% for van in vans %}
+        <tr>
+          <td><a href="{% url 'van_detail' van.pk %}">{{ van.registration }}</a></td>
+          <td style="color:#555">{{ van.model }}</td>
+          <td><span class="badge badge-{{ van.status }}">{{ van.get_status_display }}</span></td>
+          <td style="color:#555">{{ van.driver.name|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="empty">No vans yet. <a href="{% url 'van_create' %}">Add one</a>.</p>{% endif %}
+  </div>
+
+  <div>
+    <div class="card" style="margin-bottom:1.25rem">
+      <h2>Recent trips</h2>
+      {% if recent_trips %}
+      <table>
+        <thead><tr><th>Van</th><th>Route</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for trip in recent_trips %}
+          <tr>
+            <td><a href="{% url 'van_detail' trip.van.pk %}">{{ trip.van.registration }}</a></td>
+            <td style="color:#555;font-size:13px">{{ trip.origin }} → {{ trip.destination }}</td>
+            <td><span class="badge badge-{{ trip.status }}">{{ trip.get_status_display }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="empty">No trips yet.</p>{% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Recent location pings</h2>
+      {% if recent_locations %}
+      <table>
+        <thead><tr><th>Van</th><th>Address</th><th>Speed</th><th>Time</th></tr></thead>
+        <tbody>
+          {% for loc in recent_locations %}
+          <tr>
+            <td><a href="{% url 'van_detail' loc.van.pk %}">{{ loc.van.registration }}</a></td>
+            <td style="color:#555;font-size:13px">{{ loc.address|default:"—" }}</td>
+            <td style="color:#555">{{ loc.speed_kmh }} km/h</td>
+            <td style="color:#888;font-size:12px">{{ loc.timestamp|date:"d M H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="empty">No location data yet.</p>{% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

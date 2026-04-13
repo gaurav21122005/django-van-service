@@ -1,0 +1,72 @@
+{% extends "tracking/base.html" %}
+{% block title %}{{ title }} — VanService{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ title }}</h1>
+  <a href="{% url 'trip_list' %}" class="btn">← Back</a>
+</div>
+
+<div class="card" style="max-width:700px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div>
+        <label>Van</label>
+        {{ form.van }}
+        {% if form.van.errors %}<p style="color:#a32d2d;font-size:12px">{{ form.van.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label>Driver</label>
+        {{ form.driver }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Origin</label>
+        {{ form.origin }}
+      </div>
+      <div>
+        <label>Destination</label>
+        {{ form.destination }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Status</label>
+        {{ form.status }}
+      </div>
+      <div>
+        <label>Distance (km)</label>
+        {{ form.distance_km }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Scheduled departure</label>
+        {{ form.scheduled_departure }}
+        {% if form.scheduled_departure.errors %}<p style="color:#a32d2d;font-size:12px">{{ form.scheduled_departure.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label>Actual departure</label>
+        {{ form.actual_departure }}
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>Actual arrival</label>
+        {{ form.actual_arrival }}
+      </div>
+      <div></div>
+    </div>
+    <div>
+      <label>Notes</label>
+      {{ form.notes }}
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{% url 'trip_list' %}" class="btn">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
